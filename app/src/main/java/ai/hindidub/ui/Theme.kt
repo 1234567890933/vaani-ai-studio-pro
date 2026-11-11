@@ -16,48 +16,57 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * Material 3 theme with a real dark mode.
+ * Glass palette.
  *
- * On Android 12+ the palette comes from the wallpaper (dynamic colour), which is what makes
- * the app look native. Below 12 a fixed palette is used. The user can force light or dark in
- * Settings — useful for a dubbing app you use at night with the phone on a charger.
+ * The dark scheme is the one that matters: a near-black navy backdrop with cyan and amber
+ * accents is what makes translucent cards read as glass rather than as grey boxes. Light mode
+ * keeps the same structure so the glass cards still separate from the background.
  */
+private val Ink = Color(0xFF070B14)
+private val Glass = Color(0xFF141B2B)
+private val Cyan = Color(0xFF5FE3F0)
+private val Amber = Color(0xFFFFC46B)
+private val Violet = Color(0xFF9D8CFF)
+
 private val DarkScheme = darkColorScheme(
-    primary = Color(0xFF8FB4FF),
-    onPrimary = Color(0xFF00214E),
-    primaryContainer = Color(0xFF16335C),
-    onPrimaryContainer = Color(0xFFD6E3FF),
-    secondary = Color(0xFF7FD8C4),
-    onSecondary = Color(0xFF00382F),
-    tertiary = Color(0xFFF2B8C6),
-    background = Color(0xFF0E1116),
-    onBackground = Color(0xFFE6E8EC),
-    surface = Color(0xFF14181E),
-    onSurface = Color(0xFFE6E8EC),
-    surfaceVariant = Color(0xFF1E242C),
-    onSurfaceVariant = Color(0xFFBFC6D1),
-    error = Color(0xFFFFB4AB),
-    outline = Color(0xFF3A424C)
+    primary = Cyan,
+    onPrimary = Color(0xFF00272C),
+    primaryContainer = Color(0xFF123B44),
+    onPrimaryContainer = Color(0xFFC9F6FC),
+    secondary = Amber,
+    onSecondary = Color(0xFF2A1A00),
+    secondaryContainer = Color(0xFF3A2A10),
+    onSecondaryContainer = Color(0xFFFFE7C2),
+    tertiary = Violet,
+    background = Ink,
+    onBackground = Color(0xFFE9EDF6),
+    surface = Glass,
+    onSurface = Color(0xFFE9EDF6),
+    surfaceVariant = Color(0xFF1B2334),
+    onSurfaceVariant = Color(0xFFA9B4C9),
+    error = Color(0xFFFF9A94),
+    outline = Color(0xFF2C3648)
 )
 
 private val LightScheme = lightColorScheme(
-    primary = Color(0xFF2459C8),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFD9E2FF),
-    secondary = Color(0xFF0F7A6C),
-    tertiary = Color(0xFF9A4059),
-    background = Color(0xFFF8F9FB),
+    primary = Color(0xFF0B6E7F),
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFFCDF2F8),
+    secondary = Color(0xFF8A5A00),
+    tertiary = Color(0xFF5B4BD6),
+    background = Color(0xFFF4F6FB),
     surface = Color(0xFFFFFFFF),
-    surfaceVariant = Color(0xFFEDF0F5)
+    surfaceVariant = Color(0xFFE7ECF5),
+    outline = Color(0xFFC7D0E0)
 )
 
 private val AppTypography = Typography(
-    headlineSmall = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.SemiBold),
+    headlineSmall = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.SemiBold, letterSpacing = (-0.3).sp),
     titleLarge = TextStyle(fontSize = 21.sp, fontWeight = FontWeight.SemiBold),
     titleMedium = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold),
     bodyLarge = TextStyle(fontSize = 15.sp, lineHeight = 22.sp),
     bodyMedium = TextStyle(fontSize = 14.sp, lineHeight = 20.sp),
-    labelSmall = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.3.sp)
+    labelSmall = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.4.sp)
 )
 
 @Composable
@@ -69,10 +78,13 @@ fun HindiDubberTheme(themeMode: String = "system", content: @Composable () -> Un
     }
     val context = LocalContext.current
     val scheme = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && dark -> dynamicDarkColorScheme(context)
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> dynamicLightColorScheme(context)
+        // Dynamic colour is deliberately off: the glass look needs the fixed deep palette to
+        // stay readable, and wallpaper-derived colours wash the translucency out.
         dark -> DarkScheme
         else -> LightScheme
     }
     MaterialTheme(colorScheme = scheme, typography = AppTypography, content = content)
 }
+
+/** Accent gradient used by the splash, the hero card and the nav indicator. */
+val BrandGradient: List<Color> = listOf(Cyan, Violet, Amber)
