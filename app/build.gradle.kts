@@ -131,5 +131,7 @@ dependencies {
     // Vendored AAR (vendor/onnxruntime) — no network needed to build.
     // To resolve from Maven instead, replace this line with:
     //   implementation("com.microsoft.onnxruntime:onnxruntime-android:1.20.0")
-    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.20.0@aar")
+    // 1.22.0: its prebuilt libonnxruntime4j_jni.so is 16 KB page aligned, which 1.20.0 is
+    // not — that was the last non-aligned library in the APK.
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.22.0@aar")
 }
