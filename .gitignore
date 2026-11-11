@@ -13,3 +13,8 @@ keystore.properties
 vendor/
 models/
 build/
+
+*.bak
+*.bak2
+.cxx/
+build/

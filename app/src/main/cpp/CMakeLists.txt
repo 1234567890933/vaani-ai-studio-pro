@@ -1,11 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(hindidub CXX)
-# SPM_TOOLS_OFF
-set(SPM_ENABLE_SHARED OFF CACHE BOOL "" FORCE)
-set(SPM_BUILD_TEST OFF CACHE BOOL "" FORCE)
-set(SPM_ENABLE_TCMALLOC OFF CACHE BOOL "" FORCE)
-set(SPM_NO_THIRD_PARTY OFF CACHE BOOL "" FORCE)
-set(SPM_DISABLE_TOOLS ON CACHE BOOL "" FORCE)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -79,6 +73,6 @@ target_include_directories(spjni PRIVATE ${SPJNI_SP_SRC})
 # SPM_LOG_LINK_FIX
 foreach(_t spm_normalize spm_train spm_encode spm_decode spm_export_vocab)
   if(TARGET ${_t})
-    target_link_libraries(${_t} PRIVATE log)
+    target_link_libraries(${_t} log)
   endif()
 endforeach()
