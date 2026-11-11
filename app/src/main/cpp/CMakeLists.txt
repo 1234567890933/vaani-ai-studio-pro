@@ -61,3 +61,11 @@ target_link_libraries(whisperjni PRIVATE whisper android log)
 
 add_library(spjni SHARED sp_jni.cpp)
 target_link_libraries(spjni PRIVATE sentencepiece android log)
+
+# SPJNI_INCLUDE_FIX
+if(DEFINED sentencepiece_SOURCE_DIR)
+  set(SPJNI_SP_SRC "${sentencepiece_SOURCE_DIR}/src")
+else()
+  set(SPJNI_SP_SRC "${SENTENCEPIECE_DIR}/src")
+endif()
+target_include_directories(spjni PRIVATE ${SPJNI_SP_SRC})
