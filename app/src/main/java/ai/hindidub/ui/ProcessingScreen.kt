@@ -51,7 +51,7 @@ fun ProcessingScreen(vm: AppViewModel, state: UiState) {
             subtitle = state.stageMessage
         )
 
-        Card(
+        GlassCard(
             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             shape = RoundedCornerShape(18.dp)
         ) {
@@ -84,7 +84,7 @@ fun ProcessingScreen(vm: AppViewModel, state: UiState) {
             }
         }
 
-        Card(
+        GlassCard(
             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             shape = RoundedCornerShape(18.dp)
         ) {
@@ -113,7 +113,7 @@ fun ProcessingScreen(vm: AppViewModel, state: UiState) {
         }
 
         if (state.lastStats.isNotBlank()) {
-            Card(
+            GlassCard(
                 Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(18.dp)
             ) {
