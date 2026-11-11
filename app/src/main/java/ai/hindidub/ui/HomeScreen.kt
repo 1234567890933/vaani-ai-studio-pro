@@ -42,7 +42,7 @@ fun HomeScreen(vm: AppViewModel, state: UiState) {
 
         // ---- setup / download ------------------------------------------------
         if (!state.modelsReady) {
-            Card(
+            GlassCard(
                 Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(18.dp)
             ) {
@@ -81,7 +81,7 @@ fun HomeScreen(vm: AppViewModel, state: UiState) {
         }
 
         // ---- attach + dub ----------------------------------------------------
-        Card(
+        GlassCard(
             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             shape = RoundedCornerShape(18.dp)
         ) {
@@ -144,7 +144,7 @@ fun HomeScreen(vm: AppViewModel, state: UiState) {
         }
 
         // ---- library ---------------------------------------------------------
-        Card(
+        GlassCard(
             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             shape = RoundedCornerShape(18.dp)
         ) {

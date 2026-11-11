@@ -72,7 +72,7 @@ fun PlayerScreen(vm: AppViewModel, state: UiState) {
             return@Column
         }
 
-        Card(
+        GlassCard(
             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             shape = RoundedCornerShape(18.dp)
         ) {
@@ -141,7 +141,7 @@ fun PlayerScreen(vm: AppViewModel, state: UiState) {
         }
 
         if (state.lastStats.isNotBlank()) {
-            Card(
+            GlassCard(
                 Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(18.dp)
             ) {

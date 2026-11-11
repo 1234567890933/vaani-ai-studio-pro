@@ -99,6 +99,7 @@ class DubEngine(
         val ttsMs: Long,
         val cache: String,
         val moods: String,
+        val director: String,
         val threads: Int,
         val peakWindowMb: Int,
         val mixGain: Float
@@ -194,6 +195,8 @@ class DubEngine(
                 var segmentsTotal = 0
                 var peakWindowMb = 0
                 var mixGain = 1f
+                var shapedLines = 0
+                var keptOriginal = 0
                 val moodCounts = HashMap<String, Int>()
                 var totalSpeech = 0L
 
@@ -295,8 +298,21 @@ class DubEngine(
                             val prosody = ProsodyAnalyzer.analyze(
                                 pcm.copyOfRange(segFrom, segTo), AudioExtractor.TARGET_SR
                             )
-                            speaker.setProsody(prosody.pitchScale, prosody.rateScale)
                             moodCounts[prosody.label] = (moodCounts[prosody.label] ?: 0) + 1
+
+                            // The director decides pacing, emphasis and whether a line is worth
+                            // voicing at all; the planner then decides where it sits in time.
+                            val decision = DirectorAgent.decide(
+                                DirectorAgent.Line(
+                                    text = lines[i],
+                                    windowMs = (seg.endMs - seg.startMs).coerceAtLeast(1L),
+                                    prosody = prosody
+                                )
+                            )
+                            speaker.setProsody(
+                                prosody.pitchScale,
+                                (prosody.rateScale * decision.rate).coerceIn(0.5f, 2f)
+                            )
 
                             val line = lines[i]
                             val cacheKey = prosody.label + "|" + line
@@ -318,13 +334,28 @@ class DubEngine(
                                 if (clip == null) clip = speaker.synthesizeToPcm(line, scratch)
                                 if (clip != null && clip.isNotEmpty()) cache.putAudio(cacheKey, clip)
                             }
-                            if (clip != null && clip.isNotEmpty()) {
+                            if (clip != null && clip.isNotEmpty() && !decision.keepOriginal) {
                                 val at24k = AudioUtils.resampleLinear(clip, clipRate, mixSr)
-                                val targetLen = ((seg.endMs - seg.startMs) * mixSr / 1000L)
+                                val windowMs = (seg.endMs - seg.startMs).coerceAtLeast(120L)
+                                val placement = LipSyncPlanner.place(
+                                    windowMs = windowMs,
+                                    clipMs = (at24k.size * 1000L / mixSr)
+                                )
+                                val targetLen = (placement.targetMs.toLong() * mixSr / 1000L)
                                     .toInt().coerceAtLeast(mixSr / 4)
-                                val fitted = TimeStretcher.fit(at24k, targetLen)
-                                val offset = seg.startMs * mixSr / 1000L
+                                var fitted = TimeStretcher.fit(at24k, targetLen)
+                                if (decision.emphasis != 1f) {
+                                    for (k in fitted.indices) {
+                                        fitted[k] = (fitted[k] * decision.emphasis).coerceIn(-1f, 1f)
+                                    }
+                                }
+                                val offset = (seg.startMs + placement.leadMs) * mixSr / 1000L
                                 voiceStore.writeMono(offset, fitted, fitted.size)
+                                if (placement.reason != "natural fit") {
+                                    shapedLines++
+                                }
+                            } else if (decision.keepOriginal) {
+                                keptOriginal++
                             }
                         }
                         ttsMs += System.currentTimeMillis() - ttsStart
@@ -404,6 +435,7 @@ class DubEngine(
                         moods = moodCounts.entries.sortedByDescending { it.value }
                             .joinToString(" · ") { "${it.key} ${it.value}" }
                             .ifBlank { "calm" },
+                        director = "$shapedLines shaped · $keptOriginal kept original",
                         threads = engineManager.threads,
                         peakWindowMb = peakWindowMb,
                         mixGain = mixGain

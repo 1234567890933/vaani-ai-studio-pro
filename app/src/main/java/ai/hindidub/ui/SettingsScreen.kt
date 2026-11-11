@@ -199,7 +199,7 @@ fun SettingsScreen(vm: AppViewModel, state: UiState) {
 
 @Composable
 private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
-    Card(
+    GlassCard(
         Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         shape = RoundedCornerShape(18.dp)
     ) {

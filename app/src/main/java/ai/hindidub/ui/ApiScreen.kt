@@ -27,7 +27,7 @@ fun ApiScreen(vm: AppViewModel, state: UiState) {
     ) {
         ScreenHeader("Cloud APIs", "Optional. The app works fully offline without any key.")
 
-        Card(
+        GlassCard(
             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             shape = RoundedCornerShape(18.dp)
         ) {
@@ -64,7 +64,7 @@ fun ApiScreen(vm: AppViewModel, state: UiState) {
         }
 
         vm.providers().forEach { p ->
-            Card(
+            GlassCard(
                 Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(18.dp)
             ) {
@@ -92,7 +92,7 @@ fun ApiScreen(vm: AppViewModel, state: UiState) {
             }
         }
 
-        Card(
+        GlassCard(
             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             shape = RoundedCornerShape(18.dp)
         ) {

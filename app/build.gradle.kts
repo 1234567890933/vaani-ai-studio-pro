@@ -13,8 +13,8 @@ android {
         applicationId = "ai.hindidub"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         ndk {
             // arm64 only: every Dimensity 6000-series device is arm64.
@@ -131,7 +131,5 @@ dependencies {
     // Vendored AAR (vendor/onnxruntime) — no network needed to build.
     // To resolve from Maven instead, replace this line with:
     //   implementation("com.microsoft.onnxruntime:onnxruntime-android:1.20.0")
-    // 1.22.0: its prebuilt libonnxruntime4j_jni.so is 16 KB page aligned, which 1.20.0 is
-    // not — that was the last non-aligned library in the APK.
-    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.22.0@aar")
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.20.0@aar")
 }
