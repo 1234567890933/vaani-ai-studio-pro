@@ -67,8 +67,13 @@ class ModelRepository(
             if (f.isBundled) {
                 val dest = pool.fileFor(f)
                 if (!dest.exists()) installBundled(group)
-                doneBefore += f.bytes
-                continue
+                if (dest.exists() && dest.length() > 0) {
+                    doneBefore += f.bytes
+                    continue
+                }
+                // The bundled asset is not in this APK (models are not shipped inside it), so
+                // fall through and download the same file from the catalogue URL.
+                Log.i(TAG, "asset missing for ${dest.name}; downloading instead")
             }
             val dest = pool.fileFor(f)
             dest.parentFile?.mkdirs()

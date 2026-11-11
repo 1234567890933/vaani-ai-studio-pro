@@ -110,8 +110,10 @@ object LanguageCatalog {
     fun sharesVoiceWith(lang: DubLanguage): DubLanguage? =
         targets.firstOrNull { it.tts == lang.tts && it.code != lang.code }
 
+    /** Quick-pick chips on the Home screen: Indian targets only, in this order. */
     fun popular(): List<DubLanguage> = listOfNotNull(
-        byCode("ja"), byCode("ko"), byCode("zh"), byCode("en"),
-        byCode("es"), byCode("ru"), byCode("ar"), byCode("hi")
+        targetByCode("hi"), targetByCode("ta"), targetByCode("te"),
+        targetByCode("bn"), targetByCode("mr"), targetByCode("gu"),
+        targetByCode("kn"), targetByCode("ml")
     )
 }

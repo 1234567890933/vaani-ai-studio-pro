@@ -68,7 +68,7 @@ class SetupManager(
             }
             onStep(Step(g.label, doneBytes.toFloat() / totalBytes, "downloading ${g.totalMb} MB"))
             try {
-                engine.repo.downloadGroup(g) { done, total, file ->
+                val ok = engine.repo.downloadGroup(g) { done, total, file ->
                     val overall = (doneBytes + done.coerceAtMost(g.totalBytes)).toFloat() / totalBytes
                     onStep(
                         Step(
@@ -76,6 +76,11 @@ class SetupManager(
                             "$file  ${done / (1024 * 1024)} / ${total / (1024 * 1024)} MB"
                         )
                     )
+                }
+                if (!ok || !engine.pool.isInstalled(g)) {
+                    onStep(Step(g.label, doneBytes.toFloat() / totalBytes, "not installed"))
+                    Log.e(TAG, "download finished but ${g.id} is still missing")
+                    return false
                 }
             } catch (t: Throwable) {
                 Log.e(TAG, "download failed for ${g.id}", t)

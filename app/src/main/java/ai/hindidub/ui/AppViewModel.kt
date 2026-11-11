@@ -119,8 +119,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             notice("Attach a video first.")
             return
         }
-        setup.nextMissingGroup()?.let {
-            notice("Model missing: ${it.label}. Open Settings → Models.")
+        setup.nextMissingGroup()?.let { missing ->
+            // Do not dead-end on a notice: start the download the job needs, then the user can
+            // press Start again. This is what the "models missing" banner should have done.
+            notice("Downloading ${missing.label} (${missing.totalMb} MB) — press Start dubbing again when it finishes.")
+            downloadEverything()
             return
         }
         governor.shouldWarnBeforeStart()?.let { notice(it) }
