@@ -4,6 +4,14 @@ project(hindidub CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Directory-scoped: applies to every target created from here on, including the
+# sentencepiece subdirectory (its spm_* tools call __android_log_write). This replaces the
+# per-target foreach that failed during configure.
+link_libraries(log)
+
+# Android 15 (16 KB page size) alignment for every shared library in this project.
+add_link_options(-Wl,-z,max-page-size=16384)
+
 # ---------------------------------------------------------------------------
 # whisper.cpp
 #   Point WHISPER_DIR at a local checkout for a pinned/offline build, otherwise
@@ -69,10 +77,3 @@ else()
   set(SPJNI_SP_SRC "${SENTENCEPIECE_DIR}/src")
 endif()
 target_include_directories(spjni PRIVATE ${SPJNI_SP_SRC})
-
-# SPM_LOG_LINK_FIX
-foreach(_t spm_normalize spm_train spm_encode spm_decode spm_export_vocab)
-  if(TARGET ${_t})
-    target_link_libraries(${_t} log)
-  endif()
-endforeach()
