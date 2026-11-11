@@ -1,0 +1,89 @@
+name: Build APK
+
+# Builds a debug APK and publishes it as a downloadable artifact.
+#
+# Layout-tolerant on purpose:
+#   * finds settings.gradle.kts wherever it is (root or one folder down);
+#   * generates the Gradle wrapper if the repo does not have one;
+#   * never assumes the repository root is the project root.
+#
+# Push, then: Actions -> "Build APK" -> Run workflow -> Artifacts -> download.
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install platform, build-tools, NDK, CMake
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" \
+                     "ndk;27.0.12077973" "cmake;3.22.1"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Locate the project root
+        id: locate
+        run: |
+          set -e
+          FOUND=""
+          while IFS= read -r f; do
+            FOUND="$(dirname "$f")"
+            break
+          done < <(find . -name settings.gradle.kts -not -path "*/build/*" -not -path "./.git/*" | head -5)
+          if [ -z "$FOUND" ]; then
+            echo "::error::No settings.gradle.kts found in the repository."
+            find . -maxdepth 3 -type d -not -path "./.git*" | head -40
+            exit 1
+          fi
+          echo "Project root: $FOUND"
+          echo "dir=$FOUND" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure the Gradle wrapper exists
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: |
+          if [ ! -f gradlew ]; then
+            echo "gradlew missing - generating the wrapper"
+            gradle wrapper --gradle-version 8.9 --distribution-type bin
+          fi
+          chmod +x gradlew
+          ls -l gradlew gradle/wrapper/
+
+      - name: Warn about oversized bundled assets
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: |
+          find app/src/main/assets -type f -size +90M 2>/dev/null | while read -r f; do
+            echo "::warning::Bundled asset $f is over 90 MB - remove it and let the app download models instead."
+          done
+
+      - name: Build debug APK
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon
+
+      - name: Upload APK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hindidubber-debug-apk
+          path: '**/build/outputs/apk/debug/*.apk'
+          if-no-files-found: warn
+          retention-days: 14

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HindiDubber</string>
+    <string name="notif_channel_name">Dubbing job</string>
+    <string name="notif_title">Dubbing to Hindi</string>
+</resources>

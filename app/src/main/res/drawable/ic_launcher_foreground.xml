@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- waveform bars -->
+    <path android:fillColor="#7FB2FF" android:pathData="M26,46h6v16h-6z" />
+    <path android:fillColor="#9BC4FF" android:pathData="M36,38h6v32h-6z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M46,30h6v48h-6z" />
+    <path android:fillColor="#9BC4FF" android:pathData="M56,40h6v28h-6z" />
+    <path android:fillColor="#7FB2FF" android:pathData="M66,48h6v12h-6z" />
+    <!-- microphone stand -->
+    <path android:fillColor="#7FD8C4" android:pathData="M74,34h6v18h-6z" />
+</vector>
