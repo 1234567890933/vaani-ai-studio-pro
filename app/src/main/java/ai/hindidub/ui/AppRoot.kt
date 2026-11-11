@@ -87,6 +87,15 @@ fun AppRoot(vm: AppViewModel) {
     }
 }
 
+/** Sealed interfaces have no `ordinal`, so the slide direction needs an explicit order. */
+private fun screenOrder(screen: Screen): Int = when (screen) {
+    Screen.Home -> 0
+    Screen.Processing -> 1
+    Screen.Player -> 2
+    Screen.Api -> 3
+    Screen.Settings -> 4
+}
+
 private fun scaleOutTo(target: Float) =
     androidx.compose.animation.scaleOut(
         targetScale = target,
@@ -111,7 +120,7 @@ private fun MainShell(vm: AppViewModel, state: UiState) {
         AnimatedContent(
             targetState = state.screen,
             transitionSpec = {
-                val forward = targetState.ordinal >= initialState.ordinal
+                val forward = screenOrder(targetState) >= screenOrder(initialState)
                 val dir = if (forward) 1 else -1
                 (slideInHorizontally(tween(260)) { w -> dir * w / 6 } +
                     fadeIn(tween(240))) togetherWith
